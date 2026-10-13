@@ -52,7 +52,7 @@ const table = (req, res, next) => {
   if (!req.t) return res.status(404).json({ error: 'Unknown table' });
   next();
 };
-const wrap = (fn) => (req, res) => fn(req, res).catch((e) => res.status(400).json({ error: e.sqlMessage || e.message }));
+const wrap = (fn) => (req, res) => fn(req, res).catch((e) => res.status(400).json({ error: e.sqlMessage || e.message || `Database error: ${e.code}` }));
 
 app.get('/api/meta', (req, res) => res.json({ tables: TABLES, reports: Object.keys(REPORTS) }));
 
