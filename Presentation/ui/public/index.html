@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hostel Management System</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Segoe UI, Arial, sans-serif; background: #f3f5f9; color: #1c2434; }
+  header { background: #1f3a5f; color: #fff; padding: 16px 24px; }
+  header h1 { margin: 0; font-size: 20px; }
+  header p { margin: 4px 0 0; font-size: 13px; opacity: .8; }
+  nav { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 24px; background: #fff; border-bottom: 1px solid #dde2ea; }
+  nav button { border: 1px solid #c9d1dd; background: #fff; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  nav button.active { background: #1f3a5f; color: #fff; border-color: #1f3a5f; }
+  main { padding: 20px 24px; max-width: 1200px; margin: auto; }
+  .card { background: #fff; border: 1px solid #dde2ea; border-radius: 8px; padding: 16px; margin-bottom: 18px; }
+  h2 { margin: 0 0 12px; font-size: 16px; }
+  form { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; align-items: end; }
+  label { font-size: 12px; color: #5a6578; display: block; }
+  input { width: 100%; padding: 7px 8px; border: 1px solid #c9d1dd; border-radius: 5px; font-size: 14px; margin-top: 3px; }
+  .btn { background: #1f7a4d; color: #fff; border: 0; padding: 9px 14px; border-radius: 5px; cursor: pointer; font-size: 14px; }
+  .del { background: #c0392b; padding: 5px 10px; font-size: 12px; }
+  .wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #e6eaf0; white-space: nowrap; }
+  th { background: #eef1f6; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  #msg { padding: 10px 14px; border-radius: 6px; margin-bottom: 14px; display: none; font-size: 14px; }
+  #msg.ok { display: block; background: #e3f5ea; color: #17603b; }
+  #msg.err { display: block; background: #fbe6e3; color: #99271b; }
+  pre { background: #f3f5f9; padding: 10px; border-radius: 6px; font-size: 12px; overflow-x: auto; }
+  .count { font-weight: normal; color: #5a6578; font-size: 13px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Hostel Accommodation and Student Services Management System</h1>
+  <p>DBMS Course Project &middot; MySQL + Node.js</p>
+</header>
+<nav id="nav"></nav>
+<main>
+  <div id="msg"></div>
+  <div id="view"></div>
+</main>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (v) => String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const label = (s) => s.replace(/_/g, ' ');
+let meta, current;
+
+function flash(text, ok) { const m = $('#msg'); m.textContent = text; m.className = ok ? 'ok' : 'err'; }
+
+async function api(url, opts) {
+  const res = await fetch(url, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+function grid(rows, pk) {
+  if (!rows.length) return '<p>No records.</p>';
+  const cols = Object.keys(rows[0]);
+  return `<div class="wrap"><table><tr>${cols.map((c) => `<th>${label(c)}</th>`).join('')}${pk ? '<th></th>' : ''}</tr>` +
+    rows.map((r) => `<tr>${cols.map((c) => `<td>${esc(r[c])}</td>`).join('')}` +
+      (pk ? `<td><button class="btn del" data-id="${esc(r[pk])}">Delete</button></td>` : '') + '</tr>').join('') +
+    '</table></div>';
+}
+
+function inputType(col) {
+  if (/date|check_in|check_out/.test(col)) return 'date';
+  if (/_id$|capacity|year|amount|rent/.test(col)) return 'number';
+  return 'text';
+}
+
+async function showTable(name) {
+  current = name;
+  const t = meta.tables[name];
+  const { rows } = await api('/api/' + name);
+  $('#view').innerHTML = `
+    <div class="card"><h2>Insert into ${label(name)}</h2>
+      <form id="f">${t.cols.map((c) => `<div><label>${label(c)}<input name="${c}" type="${inputType(c)}" step="any"></label></div>`).join('')}
+      <div><button class="btn">Insert</button></div></form></div>
+    <div class="card"><h2>View ${label(name)} <span class="count">(${rows.length} records)</span></h2>${grid(rows, t.pk)}</div>`;
+  $('#f').onsubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const r = await api('/api/' + name, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(e.target))) });
+      await showTable(name); flash(`Inserted record with id ${r.id} into ${name}.`, true);
+    } catch (err) { flash(err.message, false); }
+  };
+  $('#view').querySelectorAll('.del').forEach((b) => b.onclick = async () => {
+    if (!confirm(`Delete ${name} record ${b.dataset.id}?`)) return;
+    try {
+      await api(`/api/${name}/${b.dataset.id}`, { method: 'DELETE' });
+      await showTable(name); flash(`Deleted record ${b.dataset.id} from ${name}.`, true);
+    } catch (err) { flash(err.message, false); }
+  });
+}
+
+async function showReports() {
+  current = 'reports';
+  let html = '';
+  for (let i = 0; i < meta.reports.length; i++) {
+    const { rows, sql } = await api('/api/report/' + i);
+    html += `<div class="card"><h2>${esc(meta.reports[i])}</h2><pre>${esc(sql)}</pre>${grid(rows)}</div>`;
+  }
+  $('#view').innerHTML = html;
+}
+
+function go(name) {
+  $('#msg').className = '';
+  document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('active', b.dataset.t === name));
+  (name === 'reports' ? showReports() : showTable(name)).catch((e) => flash(e.message, false));
+}
+
+(async () => {
+  meta = await api('/api/meta');
+  $('#nav').innerHTML = [...Object.keys(meta.tables), 'reports']
+    .map((t) => `<button data-t="${t}">${label(t)}</button>`).join('');
+  document.querySelectorAll('nav button').forEach((b) => b.onclick = () => go(b.dataset.t));
+  go('student');
+})();
+</script>
+</body>
+</html>

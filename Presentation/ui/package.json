@@ -1,0 +1,11 @@
+{
+  "name": "hostel-management-ui",
+  "version": "1.0.0",
+  "description": "UI for Hostel Accommodation and Student Services Management System",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql2": "^3.11.0"
+  }
+}

@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 560" font-family="Segoe UI, Arial, sans-serif" font-size="13">
+  <rect width="980" height="560" fill="#ffffff"/>
+  <text x="490" y="28" text-anchor="middle" font-size="17" font-weight="bold" fill="#1f3a5f">ER Diagram: Hostel Accommodation and Student Services Management System</text>
+  <g stroke="#1f3a5f" stroke-width="1.5" fill="none">
+    <line x1="210" y1="120" x2="390" y2="120"/>
+    <line x1="590" y1="120" x2="770" y2="120"/>
+    <line x1="870" y1="200" x2="870" y2="330"/>
+    <line x1="770" y1="400" x2="590" y2="400"/>
+    <line x1="390" y1="400" x2="210" y2="400"/>
+  </g>
+  <g fill="#1c2434">
+    <text x="300" y="112" text-anchor="middle">has (1 : N)</text>
+    <text x="680" y="112" text-anchor="middle">allotted in (1 : N)</text>
+    <text x="878" y="270">for (N : 1)</text>
+    <text x="680" y="392" text-anchor="middle">raises (1 : N)</text>
+    <text x="300" y="392" text-anchor="middle">pays (1 : N)</text>
+  </g>
+  <g>
+    <g>
+      <rect x="30" y="60" width="180" height="130" fill="#eef1f6" stroke="#1f3a5f"/>
+      <rect x="30" y="60" width="180" height="26" fill="#1f3a5f"/>
+      <text x="120" y="78" text-anchor="middle" fill="#fff" font-weight="bold">HOSTEL</text>
+      <text x="40" y="104" text-decoration="underline">hostel_id (PK)</text>
+      <text x="40" y="122">hostel_name (UQ)</text>
+      <text x="40" y="140">hostel_type</text>
+      <text x="40" y="158">warden_name</text>
+      <text x="40" y="176">warden_phone</text>
+    </g>
+    <g>
+      <rect x="390" y="60" width="200" height="155" fill="#eef1f6" stroke="#1f3a5f"/>
+      <rect x="390" y="60" width="200" height="26" fill="#1f3a5f"/>
+      <text x="490" y="78" text-anchor="middle" fill="#fff" font-weight="bold">ROOM</text>
+      <text x="400" y="104" text-decoration="underline">room_id (PK)</text>
+      <text x="400" y="122">hostel_id (FK)</text>
+      <text x="400" y="140">room_no</text>
+      <text x="400" y="158">room_type</text>
+      <text x="400" y="176">capacity</text>
+      <text x="400" y="194">monthly_rent</text>
+    </g>
+    <g>
+      <rect x="770" y="60" width="190" height="140" fill="#eef1f6" stroke="#1f3a5f"/>
+      <rect x="770" y="60" width="190" height="26" fill="#1f3a5f"/>
+      <text x="865" y="78" text-anchor="middle" fill="#fff" font-weight="bold">ALLOCATION</text>
+      <text x="780" y="104" text-decoration="underline">allocation_id (PK)</text>
+      <text x="780" y="122">student_id (FK)</text>
+      <text x="780" y="140">room_id (FK)</text>
+      <text x="780" y="158">check_in, check_out</text>
+      <text x="780" y="176">status</text>
+    </g>
+    <g>
+      <rect x="770" y="330" width="190" height="190" fill="#eef1f6" stroke="#1f3a5f"/>
+      <rect x="770" y="330" width="190" height="26" fill="#1f3a5f"/>
+      <text x="865" y="348" text-anchor="middle" fill="#fff" font-weight="bold">STUDENT</text>
+      <text x="780" y="374" text-decoration="underline">student_id (PK)</text>
+      <text x="780" y="392">roll_no (UQ)</text>
+      <text x="780" y="410">full_name</text>
+      <text x="780" y="428">gender</text>
+      <text x="780" y="446">department</text>
+      <text x="780" y="464">year_of_study</text>
+      <text x="780" y="482">phone</text>
+      <text x="780" y="500">email (UQ)</text>
+    </g>
+    <g>
+      <rect x="390" y="330" width="200" height="155" fill="#eef1f6" stroke="#1f3a5f"/>
+      <rect x="390" y="330" width="200" height="26" fill="#1f3a5f"/>
+      <text x="490" y="348" text-anchor="middle" fill="#fff" font-weight="bold">SERVICE_REQUEST</text>
+      <text x="400" y="374" text-decoration="underline">request_id (PK)</text>
+      <text x="400" y="392">student_id (FK)</text>
+      <text x="400" y="410">service_type</text>
+      <text x="400" y="428">description</text>
+      <text x="400" y="446">request_date</text>
+      <text x="400" y="464">status</text>
+    </g>
+    <g>
+      <rect x="30" y="330" width="180" height="155" fill="#eef1f6" stroke="#1f3a5f"/>
+      <rect x="30" y="330" width="180" height="26" fill="#1f3a5f"/>
+      <text x="120" y="348" text-anchor="middle" fill="#fff" font-weight="bold">FEE_PAYMENT</text>
+      <text x="40" y="374" text-decoration="underline">payment_id (PK)</text>
+      <text x="40" y="392">student_id (FK)</text>
+      <text x="40" y="410">amount</text>
+      <text x="40" y="428">payment_date</text>
+      <text x="40" y="446">payment_mode</text>
+      <text x="40" y="464">fee_month</text>
+    </g>
+  </g>
+</svg>
