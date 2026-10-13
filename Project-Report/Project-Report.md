@@ -7,9 +7,8 @@
 
 | Name | Roll Number |
 |------|-------------|
-| MEMBER 1 NAME | ROLL NO |
-| MEMBER 2 NAME | ROLL NO |
-| MEMBER 3 NAME | ROLL NO |
+| Mohammed Amaan Khan | 25WU0101075 |
+| Arslan Alam | 25WU0101016 |
 
 ---
 
@@ -273,9 +272,8 @@ Future enhancements: login with warden and student roles, update/edit forms, a t
 
 | Member | Contribution |
 |--------|--------------|
-| MEMBER 1 NAME | |
-| MEMBER 2 NAME | |
-| MEMBER 3 NAME | |
+| Mohammed Amaan Khan | |
+| Arslan Alam | |
 
 ## 16. Appendix: GitHub Repository Link
 

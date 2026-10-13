@@ -6,9 +6,8 @@ A MySQL database with a web UI to manage hostels, rooms, student room allocation
 
 | Name | Roll Number |
 |------|-------------|
-| MEMBER 1 NAME | ROLL NO |
-| MEMBER 2 NAME | ROLL NO |
-| MEMBER 3 NAME | ROLL NO |
+| Mohammed Amaan Khan | 25WU0101075 |
+| Arslan Alam | 25WU0101016 |
 
 ## Folders
 
