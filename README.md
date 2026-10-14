@@ -8,6 +8,7 @@ A MySQL database with a web UI to manage hostels, rooms, student room allocation
 |------|-------------|
 | Mohammed Amaan Khan | 25WU0101075 |
 | Arslan Alam | 25WU0101016 |
+| Jaswant Reddy | 25WU0101056 |
 
 ## Folders
 
