@@ -3,123 +3,453 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hostel Management System</title>
+<title>Hostel Accommodation and Student Services</title>
 <style>
+  :root {
+    --bg: #f4f6f9; --card: #fff; --tx: #1b2433; --mu: #64708a; --bd: #e0e5ec; --soft: #eef2f7;
+    --pr: #1f5f8b; --pr-tx: #fff; --ok: #237a45; --ok-bg: #e2f4e8; --bad: #b42318; --bad-bg: #fdecea;
+    --warn: #a15c00; --warn-bg: #fff3dc; --info: #1f5f8b; --info-bg: #e3eef8; --code: #0f172a; --code-tx: #d6e2f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #10141b; --card: #171c25; --tx: #e5eaf2; --mu: #93a0b5; --bd: #283142; --soft: #1e2532;
+      --pr: #5aa2d6; --pr-tx: #0b1220; --ok: #5cc685; --ok-bg: #173323; --bad: #ff7b72; --bad-bg: #3a1a1a;
+      --warn: #f0b350; --warn-bg: #3a2b12; --info: #7cb8e4; --info-bg: #182a3b; --code: #0a0e14; --code-tx: #d6e2f0;
+    }
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: Segoe UI, Arial, sans-serif; background: #f3f5f9; color: #1c2434; }
-  header { background: #1f3a5f; color: #fff; padding: 16px 24px; }
-  header h1 { margin: 0; font-size: 20px; }
-  header p { margin: 4px 0 0; font-size: 13px; opacity: .8; }
-  nav { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 24px; background: #fff; border-bottom: 1px solid #dde2ea; }
-  nav button { border: 1px solid #c9d1dd; background: #fff; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; }
-  nav button.active { background: #1f3a5f; color: #fff; border-color: #1f3a5f; }
-  main { padding: 20px 24px; max-width: 1200px; margin: auto; }
-  .card { background: #fff; border: 1px solid #dde2ea; border-radius: 8px; padding: 16px; margin-bottom: 18px; }
-  h2 { margin: 0 0 12px; font-size: 16px; }
-  form { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; align-items: end; }
-  label { font-size: 12px; color: #5a6578; display: block; }
-  input { width: 100%; padding: 7px 8px; border: 1px solid #c9d1dd; border-radius: 5px; font-size: 14px; margin-top: 3px; }
-  .btn { background: #1f7a4d; color: #fff; border: 0; padding: 9px 14px; border-radius: 5px; cursor: pointer; font-size: 14px; }
-  .del { background: #c0392b; padding: 5px 10px; font-size: 12px; }
+  body { margin: 0; background: var(--bg); color: var(--tx); font: 14px/1.5 "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; }
+  header { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between;
+           padding: 12px 20px; background: var(--card); border-bottom: 1px solid var(--bd); }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; }
+  .brand svg { width: 26px; height: 26px; color: var(--pr); flex: none; }
+  .right { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .pill { font-size: 12px; padding: 3px 10px; border-radius: 99px; border: 1px solid var(--bd); color: var(--mu); white-space: nowrap; }
+  .pill.ok { color: var(--ok); border-color: var(--ok); }
+  .pill.bad { color: var(--bad); border-color: var(--bad); }
+  .pill.ok::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); margin-right: 6px; }
+  main { max-width: 1180px; margin: 0 auto; padding: 16px 20px 80px; }
+  nav.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  nav.tabs button, .chips button { border: 1px solid var(--bd); background: var(--card); color: var(--tx); padding: 7px 13px; border-radius: 8px; cursor: pointer; font: inherit; }
+  nav.tabs button.on, .chips button.on { background: var(--pr); color: var(--pr-tx); border-color: var(--pr); }
+  .card { background: var(--card); border: 1px solid var(--bd); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+  .card h2 { margin: 0 0 4px; font-size: 15px; }
+  .card .sub { margin: 0 0 12px; color: var(--mu); font-size: 13px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+  .grid2 > .card { margin-bottom: 0; }
+  .stack > * + * { margin-top: 16px; }
+  form.f { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px 12px; align-items: end; }
+  form.f .wide { grid-column: 1 / -1; }
+  label { display: block; font-size: 12px; color: var(--mu); }
+  input, select, textarea { width: 100%; margin-top: 3px; padding: 7px 9px; font: inherit; color: var(--tx); background: var(--card);
+           border: 1px solid var(--bd); border-radius: 7px; }
+  textarea { min-height: 60px; resize: vertical; }
+  header select { width: auto; min-width: 240px; margin: 0; }
+  .btn { border: 1px solid var(--pr); background: var(--pr); color: var(--pr-tx); padding: 7px 14px; border-radius: 7px; cursor: pointer; font: inherit; }
+  .btn.ghost { background: transparent; color: var(--pr); }
+  .btn.red { background: var(--bad); border-color: var(--bad); color: #fff; }
+  .btn.sm { padding: 3px 10px; font-size: 12px; }
   .wrap { overflow-x: auto; }
-  table { border-collapse: collapse; width: 100%; font-size: 14px; }
-  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #e6eaf0; white-space: nowrap; }
-  th { background: #eef1f6; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
-  #msg { padding: 10px 14px; border-radius: 6px; margin-bottom: 14px; display: none; font-size: 14px; }
-  #msg.ok { display: block; background: #e3f5ea; color: #17603b; }
-  #msg.err { display: block; background: #fbe6e3; color: #99271b; }
-  pre { background: #f3f5f9; padding: 10px; border-radius: 6px; font-size: 12px; overflow-x: auto; }
-  .count { font-weight: normal; color: #5a6578; font-size: 13px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--bd); white-space: nowrap; }
+  th { background: var(--soft); font-size: 12px; font-weight: 600; }
+  td.num, th.num { text-align: right; }
+  .tag { display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 99px; border: 1px solid currentColor; }
+  .t-Open, .t-Due { color: var(--warn); background: var(--warn-bg); }
+  .t-Assigned, .t-InProgress { color: var(--info); background: var(--info-bg); }
+  .t-Resolved, .t-Paid, .t-Active { color: var(--ok); background: var(--ok-bg); }
+  .t-Cancelled, .t-Vacated { color: var(--mu); background: var(--soft); }
+  .t-Full { color: var(--bad); background: var(--bad-bg); }
+  .kv { display: grid; grid-template-columns: 130px 1fr; gap: 6px 12px; font-size: 13px; }
+  .kv div:nth-child(odd) { color: var(--mu); }
+  .big { font-size: 26px; font-weight: 700; }
+  .stats { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-bottom: 6px; }
+  .stats div span { display: block; font-size: 24px; font-weight: 700; }
+  .stats div small { color: var(--mu); }
+  .beds { display: flex; gap: 4px; }
+  .beds i { width: 14px; height: 14px; border-radius: 3px; background: var(--ok); }
+  .beds i.free { background: transparent; border: 2px solid var(--ok); }
+  .trail { margin: 6px 0 0; padding: 0; list-style: none; font-size: 12px; color: var(--mu); }
+  .trail li::before { content: "> "; }
+  .tcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+  .tcards button { text-align: left; border: 1px solid var(--bd); background: var(--card); color: var(--tx); border-radius: 8px; padding: 10px 12px; cursor: pointer; font: inherit; }
+  .tcards button.on { border-color: var(--pr); box-shadow: 0 0 0 2px var(--info-bg); }
+  .tcards b { display: block; font-family: Consolas, monospace; font-size: 13px; }
+  .tcards small { color: var(--mu); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  pre { margin: 0; background: var(--code); color: var(--code-tx); padding: 12px 14px; border-radius: 8px; font: 12px/1.5 Consolas, "Cascadia Mono", monospace; overflow-x: auto; white-space: pre; }
+  .sqlbox { margin-top: 12px; }
+  .sqlbox b { display: block; font-size: 11px; letter-spacing: .06em; color: var(--mu); margin-bottom: 4px; }
+  .muted { color: var(--mu); }
+  .err { color: var(--bad); }
+  .k { font-size: 10px; padding: 0 5px; border-radius: 4px; margin-left: 4px; vertical-align: 1px; }
+  .k.pk { background: var(--warn-bg); color: var(--warn); }
+  .k.fk { background: var(--info-bg); color: var(--info); }
+  #toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); max-width: min(680px, calc(100% - 32px));
+           padding: 10px 16px; border-radius: 8px; color: #fff; font-size: 13px; display: none; z-index: 9; box-shadow: 0 6px 20px rgba(0,0,0,.18); }
+  #toast.ok { display: block; background: #237a45; }
+  #toast.bad { display: block; background: #b42318; }
+  .empty { padding: 14px; color: var(--mu); text-align: center; }
+  @media (max-width: 640px) {
+    header { padding: 10px 14px; } main { padding: 12px 14px 80px; }
+    header select { min-width: 0; width: 100%; } .right { width: 100%; }
+    .grid2 { grid-template-columns: 1fr; } .kv { grid-template-columns: 110px 1fr; }
+  }
 </style>
 </head>
 <body>
 <header>
-  <h1>Hostel Accommodation and Student Services Management System</h1>
-  <p>DBMS Course Project &middot; MySQL + Node.js</p>
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6M9 10h.01M15 10h.01"/></svg>
+    Hostel Accommodation and Student Services
+  </div>
+  <div class="right">
+    <span id="status" class="pill">Connecting to MySQL...</span>
+    <label style="display:flex;align-items:center;gap:8px;margin:0">Login as <select id="who"></select></label>
+  </div>
 </header>
-<nav id="nav"></nav>
 <main>
-  <div id="msg"></div>
+  <nav class="tabs" id="tabs"></nav>
   <div id="view"></div>
 </main>
+<div id="toast"></div>
+
 <script>
-const $ = (s) => document.querySelector(s);
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = (v) => String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const label = (s) => s.replace(/_/g, ' ');
-let meta, current;
+const tag = (s) => `<span class="tag t-${String(s).replace(/\s/g, '')}">${esc(s)}</span>`;
+const money = (n) => 'Rs. ' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 0 });
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const monthName = (m) => m ? `${MONTHS[+m.slice(5) - 1]} ${m.slice(0, 4)}` : '';
+const NEXT = { Open: 'Assigned', Assigned: 'In Progress', 'In Progress': 'Resolved' };
 
-function flash(text, ok) { const m = $('#msg'); m.textContent = text; m.className = ok ? 'ok' : 'err'; }
+let people, user, tab, lastSql = null, schemaMeta = null, dbSub = 'tables', dbTable = 'allocation', recTable = 'student';
 
-async function api(url, opts) {
+let toastTimer;
+function toast(text, ok = true) {
+  const t = $('#toast'); t.textContent = text; t.className = ok ? 'ok' : 'bad';
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.className = ''), 6000);
+}
+
+async function api(url, opts = {}) {
+  if (opts.body && typeof opts.body !== 'string') {
+    opts.body = JSON.stringify(opts.body); opts.headers = { 'Content-Type': 'application/json' };
+  }
   const res = await fetch(url, opts);
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Request failed');
+  const data = await res.json().catch(() => ({ error: 'Server did not answer' }));
+  if (!res.ok) { const e = new Error(data.error || 'Request failed'); e.sql = data.sql; throw e; }
   return data;
 }
 
-function grid(rows, pk) {
-  if (!rows.length) return '<p>No records.</p>';
-  const cols = Object.keys(rows[0]);
-  return `<div class="wrap"><table><tr>${cols.map((c) => `<th>${label(c)}</th>`).join('')}${pk ? '<th></th>' : ''}</tr>` +
-    rows.map((r) => `<tr>${cols.map((c) => `<td>${esc(r[c])}</td>`).join('')}` +
-      (pk ? `<td><button class="btn del" data-id="${esc(r[pk])}">Delete</button></td>` : '') + '</tr>').join('') +
-    '</table></div>';
+function grid(rows, opts = {}) {
+  if (!rows || !rows.length) return `<div class="empty">${opts.empty || 'No records.'}</div>`;
+  const cols = opts.cols || Object.keys(rows[0]);
+  const fmt = opts.fmt || {};
+  return `<div class="wrap"><table><tr>${cols.map((c) => `<th>${esc(c)}${opts.keys?.[c] || ''}</th>`).join('')}${opts.action ? '<th></th>' : ''}</tr>` +
+    rows.map((r) => `<tr>${cols.map((c) => `<td>${fmt[c] ? fmt[c](r[c], r) : esc(r[c])}</td>`).join('')}` +
+      (opts.action ? `<td>${opts.action(r)}</td>` : '') + '</tr>').join('') + '</table></div>';
 }
 
-function inputType(col) {
-  if (/date|check_in|check_out/.test(col)) return 'date';
-  if (/_id$|capacity|year|amount|rent/.test(col)) return 'number';
-  return 'text';
-}
+const sqlPanel = () => lastSql ? `<div class="sqlbox"><b>STATEMENT SENT TO MYSQL</b><pre>${esc(lastSql)}</pre></div>` : '';
 
-async function showTable(name) {
-  current = name;
-  const t = meta.tables[name];
-  const { rows } = await api('/api/' + name);
-  $('#view').innerHTML = `
-    <div class="card"><h2>Insert into ${label(name)}</h2>
-      <form id="f">${t.cols.map((c) => `<div><label>${label(c)}<input name="${c}" type="${inputType(c)}" step="any"></label></div>`).join('')}
-      <div><button class="btn">Insert</button></div></form></div>
-    <div class="card"><h2>View ${label(name)} <span class="count">(${rows.length} records)</span></h2>${grid(rows, t.pk)}</div>`;
-  $('#f').onsubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const r = await api('/api/' + name, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(Object.fromEntries(new FormData(e.target))) });
-      await showTable(name); flash(`Inserted record with id ${r.id} into ${name}.`, true);
-    } catch (err) { flash(err.message, false); }
-  };
-  $('#view').querySelectorAll('.del').forEach((b) => b.onclick = async () => {
-    if (!confirm(`Delete ${name} record ${b.dataset.id}?`)) return;
-    try {
-      await api(`/api/${name}/${b.dataset.id}`, { method: 'DELETE' });
-      await showTable(name); flash(`Deleted record ${b.dataset.id} from ${name}.`, true);
-    } catch (err) { flash(err.message, false); }
-  });
-}
-
-async function showReports() {
-  current = 'reports';
-  let html = '';
-  for (let i = 0; i < meta.reports.length; i++) {
-    const { rows, sql } = await api('/api/report/' + i);
-    html += `<div class="card"><h2>${esc(meta.reports[i])}</h2><pre>${esc(sql)}</pre>${grid(rows)}</div>`;
+async function act(fn, okText) {
+  try {
+    const r = await fn();
+    lastSql = r && r.sql ? r.sql : null;
+    await render();
+    toast(typeof okText === 'function' ? okText(r) : okText, true);
+  } catch (e) {
+    lastSql = e.sql || null;
+    await render();
+    toast(e.message, false);
   }
-  $('#view').innerHTML = html;
 }
 
-function go(name) {
-  $('#msg').className = '';
-  document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('active', b.dataset.t === name));
-  (name === 'reports' ? showReports() : showTable(name)).catch((e) => flash(e.message, false));
+// ---------------- login and tabs ----------------
+
+function role() { return user.split(':')[0]; }
+function uid() { return Number(user.split(':')[1]); }
+function tabsFor() {
+  const r = role();
+  const own = r === 'student' ? ['My Room', 'Service Requests', 'Fees']
+    : r === 'warden' ? ['Allocate Room', 'Occupancy', 'Fee Dues', 'All Requests']
+    : ['Service Queue'];
+  return [...own, 'Records', 'Database'];
 }
+
+function drawTabs() {
+  $('#tabs').innerHTML = tabsFor().map((t) => `<button class="${t === tab ? 'on' : ''}">${t}</button>`).join('');
+  $$('#tabs button').forEach((b) => (b.onclick = () => { tab = b.textContent; lastSql = null; drawTabs(); render(); }));
+}
+
+async function render() {
+  const v = $('#view');
+  try {
+    const fn = { 'My Room': myRoom, 'Service Requests': myRequests, Fees: myFees, 'Allocate Room': allocate,
+      Occupancy: occupancy, 'Fee Dues': feeDues, 'All Requests': allRequests, 'Service Queue': queue,
+      Records: records, Database: database }[tab];
+    await fn(v);
+  } catch (e) {
+    v.innerHTML = `<div class="card err">${esc(e.message)}</div>`;
+  }
+}
+
+// ---------------- student ----------------
+
+async function myRoom(v) {
+  const d = await api('/api/student/' + uid());
+  const p = d.profile, r = d.room;
+  v.innerHTML = `<div class="grid2">
+    <div class="card"><h2>${esc(p.full_name)}</h2><p class="sub">${esc(p.roll_no)} &middot; ${esc(p.dept_name)}</p>
+      <div class="kv"><div>Gender</div><div>${esc(p.gender)}</div><div>Year of study</div><div>${p.year_of_study}</div>
+      <div>Phone</div><div>${esc(p.phone)}</div><div>Email</div><div>${esc(p.email)}</div></div></div>
+    <div class="card"><h2>My room</h2>${r ? `<p class="sub">Allotted on ${esc(r.check_in)}</p>
+      <div class="big">${esc(r.room_no)} <span class="muted" style="font-size:15px;font-weight:400">${esc(r.hostel_name)}</span></div>
+      <div class="kv" style="margin-top:8px"><div>Room type</div><div>${esc(r.room_type)} (${r.capacity} ${r.capacity > 1 ? 'beds' : 'bed'})</div>
+      <div>Monthly rent</div><div>${money(r.monthly_rent)}</div><div>Warden</div><div>${esc(r.warden)}, ${esc(r.warden_phone)}</div></div>`
+      : '<p class="sub">You do not have a room at the moment. Contact the hostel office.</p>'}</div>
+  </div>
+  <div class="card" style="margin-top:16px"><h2>Roommates</h2>${grid(d.roommates, { empty: r ? 'No roommates. You have the room to yourself.' : 'No room allotted.' })}</div>
+  <div class="card"><h2>Stay history</h2>${grid(d.history, { fmt: { status: tag } })}</div>`;
+}
+
+async function myRequests(v) {
+  const d = await api('/api/student/' + uid());
+  const trail = (id) => d.trail.filter((t) => t.request_id === id)
+    .map((t) => `<li>${esc(t.new_status)} by ${esc(t.staff)} on ${esc(t.updated_on.slice(0, 16))}${t.remarks ? `: ${esc(t.remarks)}` : ''}</li>`).join('');
+  v.innerHTML = `<div class="card"><h2>Raise a service request</h2>
+    <p class="sub">Saved through the stored procedure <code>sp_raise_request</code>. Only a current resident can raise a request, and only one open request per type.</p>
+    <form class="f" id="rf">
+      <label>Service type<select name="service_type_id">${d.types.map((t) => `<option value="${t.service_type_id}">${esc(t.type_name)} (target ${t.target_days} ${t.target_days > 1 ? 'days' : 'day'})</option>`).join('')}</select></label>
+      <label class="wide">Description<input name="description" required maxlength="200" placeholder="What needs attention?"></label>
+      <div><button class="btn">Submit request</button></div>
+    </form>${sqlPanel()}</div>
+    <div class="card"><h2>My requests</h2><p class="sub">Every status change is stored in <code>request_update</code> with the staff member and time.</p>
+    ${d.requests.length ? `<div class="wrap"><table><tr><th>#</th><th>Type</th><th>Description</th><th>Raised</th><th>Status</th><th></th></tr>
+      ${d.requests.map((q) => `<tr><td>${q.request_id}</td><td>${esc(q.type_name)}</td><td style="white-space:normal">${esc(q.description)}<ul class="trail">${trail(q.request_id)}</ul></td>
+      <td>${esc(q.request_date)}</td><td>${tag(q.status)}${q.resolved_on ? `<div class="muted" style="font-size:11px">on ${esc(q.resolved_on)}</div>` : ''}</td>
+      <td>${q.status === 'Open' ? `<button class="btn ghost sm" data-cancel="${q.request_id}">Cancel</button>` : ''}</td></tr>`).join('')}</table></div>`
+      : '<div class="empty">No requests yet.</div>'}</div>`;
+  $('#rf').onsubmit = (e) => {
+    e.preventDefault();
+    const body = { student_id: uid(), ...Object.fromEntries(new FormData(e.target)) };
+    act(() => api('/api/requests', { method: 'POST', body }), (r) => `Request #${r.id} submitted with status Open.`);
+  };
+  $$('[data-cancel]', v).forEach((b) => (b.onclick = () =>
+    act(() => api(`/api/requests/${b.dataset.cancel}/cancel`, { method: 'POST' }), `Request #${b.dataset.cancel} cancelled.`)));
+}
+
+async function myFees(v) {
+  const d = await api('/api/student/' + uid());
+  const r = d.room;
+  const paid = new Set(d.payments.map((p) => p.fee_month));
+  const cur = d.today.slice(0, 7);
+  v.innerHTML = `<div class="grid2">
+    <div class="card"><h2>Pay rent</h2>${r ? `<p class="sub">Room ${esc(r.room_no)}, ${esc(r.hostel_name)}. Monthly rent ${money(r.monthly_rent)}.
+      The trigger <code>trg_fee_before_insert</code> accepts only the rent of your current room.</p>
+      <form class="f" id="pf">
+        <label>Month<input name="fee_month" type="month" value="${cur}" required></label>
+        <label>Amount (Rs.)<input name="amount" type="number" step="0.01" value="${r.monthly_rent}" required></label>
+        <label>Mode<select name="payment_mode"><option>UPI</option><option>Card</option><option>NetBanking</option><option>Cash</option></select></label>
+        <div><button class="btn">Pay</button></div>
+      </form>${sqlPanel()}` : '<p class="sub">No room allotted, so there is no rent to pay.</p>'}</div>
+    <div class="card"><h2>${monthName(cur)}</h2><p class="sub">Status for the current month</p>
+      <div class="big">${paid.has(cur) ? tag('Paid') : tag('Due')}</div>
+      <p class="muted">Months paid: ${d.payments.length}. Total paid: ${money(d.payments.reduce((a, p) => a + Number(p.amount), 0))}</p></div>
+  </div>
+  <div class="card" style="margin-top:16px"><h2>Payment history</h2>${grid(d.payments, { fmt: { fee_month: (m) => `${esc(m)} <span class="muted">(${monthName(m)})</span>`, amount: money } })}</div>`;
+  if ($('#pf')) $('#pf').onsubmit = (e) => {
+    e.preventDefault();
+    const body = { student_id: uid(), ...Object.fromEntries(new FormData(e.target)) };
+    act(() => api('/api/fees', { method: 'POST', body }), (x) => `Payment #${x.id} recorded for ${monthName(body.fee_month)}.`);
+  };
+}
+
+// ---------------- warden ----------------
+
+let feeMonth = null;
+async function allocate(v) {
+  const d = await api('/api/office');
+  const free = d.occupancy.filter((o) => o.free_beds > 0);
+  v.innerHTML = `<div class="card"><h2>Allot a room</h2>
+    <p class="sub">Calls <code>sp_allocate_room</code>. The trigger <code>trg_allocation_before_insert</code> refuses a full room, a hostel of the other gender, and a student who already has a room.</p>
+    <form class="f" id="af">
+      <label>Student<select name="student_id">${d.allStudents.map((s) => `<option value="${s.student_id}" ${d.unallotted.some((u) => u.student_id === s.student_id) ? '' : 'data-has="1"'}>${esc(s.roll_no)} ${esc(s.full_name)} (${s.gender[0]})${d.unallotted.some((u) => u.student_id === s.student_id) ? '' : ' - has a room'}</option>`).join('')}</select></label>
+      <label>Room<select name="room_id">${d.occupancy.map((o) => `<option value="${o.room_id}">${esc(o.hostel_name)} ${esc(o.room_no)} (${o.hostel_type}, ${o.free_beds} free)</option>`).join('')}</select></label>
+      <label>Check-in date<input type="date" name="check_in" value="${d.today}" required></label>
+      <div><button class="btn">Allot</button></div>
+    </form>${sqlPanel()}</div>
+    <div class="grid2">
+      <div class="card"><h2>Students without a room</h2>${grid(d.unallotted, { cols: ['roll_no', 'full_name', 'gender'], empty: 'Every student has a room.' })}</div>
+      <div class="card"><h2>Rooms with a free bed</h2>${grid(free, { cols: ['hostel_name', 'hostel_type', 'room_no', 'free_beds', 'monthly_rent'] })}</div>
+    </div>
+    <div class="card" style="margin-top:16px"><h2>Current residents</h2><p class="sub">Vacating sets <code>status = 'Vacated'</code> and the check-out date; the bed becomes free at once.</p>
+    ${grid(d.residents, { cols: ['allocation_id', 'roll_no', 'full_name', 'hostel_name', 'room_no', 'check_in'],
+      action: (r) => `<button class="btn ghost sm" data-vacate="${r.allocation_id}">Vacate</button>` })}</div>`;
+  const sel = $('#af select[name=student_id]');
+  const first = [...sel.options].find((o) => !o.dataset.has); if (first) sel.value = first.value;
+  const room = d.occupancy.find((o) => o.free_beds > 0); if (room) $('#af select[name=room_id]').value = room.room_id;
+  $('#af').onsubmit = (e) => {
+    e.preventDefault();
+    act(() => api('/api/allocate', { method: 'POST', body: Object.fromEntries(new FormData(e.target)) }), 'Room allotted.');
+  };
+  $$('[data-vacate]', v).forEach((b) => (b.onclick = () => {
+    if (b.dataset.sure) return act(() => api('/api/vacate/' + b.dataset.vacate, { method: 'POST', body: {} }), `Allocation ${b.dataset.vacate} vacated.`);
+    b.dataset.sure = 1; b.textContent = 'Confirm?'; b.classList.add('red');
+  }));
+}
+
+async function occupancy(v) {
+  const d = await api('/api/office');
+  const total = d.occupancy.reduce((a, o) => a + o.capacity, 0), used = d.occupancy.reduce((a, o) => a + o.occupied, 0);
+  const hostels = [...new Set(d.occupancy.map((o) => o.hostel_name))];
+  v.innerHTML = `<div class="card"><h2>Occupancy</h2><p class="sub">From the view <code>v_room_occupancy</code>.</p>
+    <div class="stats"><div><span>${d.occupancy.length}</span><small>rooms</small></div><div><span>${total}</span><small>beds</small></div>
+    <div><span>${used}</span><small>occupied</small></div><div><span>${total - used}</span><small>free</small></div>
+    <div><span>${Math.round((used * 100) / total)}%</span><small>occupancy</small></div></div></div>
+    ${hostels.map((h) => { const rs = d.occupancy.filter((o) => o.hostel_name === h); return `<div class="card"><h2>${esc(h)} <span class="muted" style="font-weight:400">${rs[0].hostel_type}</span></h2>
+      ${grid(rs, { cols: ['room_no', 'room_type', 'capacity', 'occupied', 'free_beds', 'beds', 'monthly_rent'],
+        fmt: { beds: (_, r) => `<span class="beds">${Array.from({ length: r.capacity }, (_, i) => `<i class="${i < r.occupied ? '' : 'free'}"></i>`).join('')}</span>`,
+               free_beds: (n) => n === 0 ? tag('Full') : n, monthly_rent: money } })}</div>`; }).join('')}`;
+}
+
+async function feeDues(v) {
+  const d = await api('/api/office?month=' + (feeMonth || ''));
+  feeMonth = d.month;
+  const due = d.dues.filter((x) => x.fee_status === 'Due');
+  v.innerHTML = `<div class="card"><h2>Rent for ${monthName(d.month)}</h2>
+    <form class="f" id="mf" style="max-width:420px"><label>Month<input type="month" name="m" value="${d.month}"></label><div><button class="btn ghost">Show</button></div></form>
+    <div class="stats" style="margin-top:12px"><div><span>${d.dues.length - due.length}</span><small>paid</small></div><div><span>${due.length}</span><small>due</small></div>
+    <div><span>${money(due.reduce((a, x) => a + Number(x.rent), 0))}</span><small>outstanding</small></div></div>
+    ${grid(d.dues, { cols: ['roll_no', 'full_name', 'hostel_name', 'room_no', 'rent', 'fee_status', 'payment_date', 'payment_mode'], fmt: { fee_status: tag, rent: money } })}</div>
+    <div class="card"><h2>Payment summary of current residents</h2><p class="sub">From the view <code>v_fee_summary</code>.</p>
+    ${grid(d.summary, { cols: ['roll_no', 'full_name', 'hostel_name', 'room_no', 'monthly_rent', 'months_paid', 'total_paid', 'last_paid_month'], fmt: { monthly_rent: money, total_paid: money } })}</div>`;
+  $('#mf').onsubmit = (e) => { e.preventDefault(); feeMonth = e.target.m.value; render(); };
+}
+
+async function allRequests(v) {
+  const d = await api('/api/queue');
+  v.innerHTML = queueHtml(d, false);
+}
+
+// ---------------- service staff ----------------
+
+function queueHtml(d, canAct) {
+  const trail = (id) => d.trail.filter((t) => t.request_id === id)
+    .map((t) => `<li>${esc(t.new_status)} by ${esc(t.staff)} on ${esc(t.updated_on.slice(0, 16))}${t.remarks ? `: ${esc(t.remarks)}` : ''}</li>`).join('');
+  const open = d.requests.filter((r) => NEXT[r.status]);
+  return `<div class="card"><h2>${canAct ? 'Service queue' : 'All service requests'}</h2>
+    <p class="sub">${canAct ? `Requests for ${esc(d.me.designation)} (${d.types.join(', ')}). ` : ''}Each step adds a row to <code>request_update</code>. The trigger <code>trg_update_before_insert</code> allows only Open, Assigned, In Progress, Resolved in that order, and <code>trg_update_after_insert</code> copies the status to the request.</p>
+    <div class="stats"><div><span>${d.requests.filter((r) => r.status === 'Open').length}</span><small>open</small></div>
+    <div><span>${d.requests.filter((r) => r.status === 'Assigned' || r.status === 'In Progress').length}</span><small>being worked on</small></div>
+    <div><span>${d.requests.filter((r) => r.status === 'Resolved').length}</span><small>resolved</small></div></div>${canAct ? sqlPanel() : ''}</div>
+    <div class="card">${d.requests.length ? `<div class="wrap"><table><tr><th>#</th><th>Student</th><th>Room</th><th>Type</th><th>Description</th><th>Raised</th><th>Status</th>${canAct ? '<th>Next step</th>' : ''}</tr>
+    ${d.requests.map((r) => `<tr><td>${r.request_id}</td><td>${esc(r.full_name)}<div class="muted" style="font-size:11px">${esc(r.roll_no)}</div></td>
+      <td>${esc(r.room_no || '-')}<div class="muted" style="font-size:11px">${esc(r.hostel_name || '')}</div></td><td>${esc(r.type_name)}</td>
+      <td style="white-space:normal;min-width:220px">${esc(r.description)}<ul class="trail">${trail(r.request_id)}</ul></td><td>${esc(r.request_date)}</td><td>${tag(r.status)}</td>
+      ${canAct ? `<td>${NEXT[r.status] ? `<div style="display:flex;gap:6px;min-width:260px"><input placeholder="Remarks" data-rem="${r.request_id}" style="margin:0">
+        <button class="btn sm" data-next="${r.request_id}" data-to="${NEXT[r.status]}">Mark ${NEXT[r.status]}</button></div>` : ''}</td>` : ''}</tr>`).join('')}
+    </table></div>` : '<div class="empty">No requests.</div>'}</div>`;
+}
+
+async function queue(v) {
+  const d = await api('/api/queue?staff_id=' + uid());
+  v.innerHTML = queueHtml(d, true);
+  $$('[data-next]', v).forEach((b) => (b.onclick = () => {
+    const id = b.dataset.next;
+    const body = { staff_id: uid(), new_status: b.dataset.to, remarks: $(`[data-rem="${id}"]`, v).value };
+    act(() => api(`/api/requests/${id}/update`, { method: 'POST', body }), (r) => `Request #${id} is now ${r.status}.`);
+  }));
+}
+
+// ---------------- records ----------------
+
+const LABEL = { department: 'dept_code', staff: 'full_name', hostel: 'hostel_name', room: 'room_no', student: 'full_name', service_type: 'type_name', service_request: 'description' };
+
+async function records(v) {
+  if (!schemaMeta) schemaMeta = await api('/api/tables');
+  const t = schemaMeta[recTable];
+  const { rows } = await api('/api/table/' + recTable);
+  const refs = {};
+  for (const c of t.cols.filter((c) => c.ref)) refs[c.name] = (await api('/api/table/' + c.ref.table)).rows;
+  const input = (c) => {
+    if (c.ref) return `<select name="${c.name}"><option value="">choose</option>${refs[c.name].map((r) => `<option value="${r[c.ref.col]}">${r[c.ref.col]}: ${esc(r[LABEL[c.ref.table]])}</option>`).join('')}</select>`;
+    if (c.options) return `<select name="${c.name}">${c.nullable ? '<option value=""></option>' : ''}${c.options.map((o) => `<option>${esc(o)}</option>`).join('')}</select>`;
+    const type = c.type === 'date' ? 'date' : ['int', 'tinyint', 'decimal'].includes(c.type) ? 'number' : 'text';
+    return `<input name="${c.name}" type="${type}" ${type === 'number' ? 'step="any"' : ''}>`;
+  };
+  v.innerHTML = `<div class="card"><h2>Records</h2><p class="sub">Insert and delete rows in any table. The form is built from the table definition; foreign keys are dropdowns. MySQL checks every constraint.</p>
+    <div class="chips">${Object.keys(schemaMeta).map((n) => `<button class="${n === recTable ? 'on' : ''}" data-t="${n}">${n}</button>`).join('')}</div>
+    <form class="f" id="ins">${t.cols.map((c) => `<label>${c.name}${c.ref ? '<span class="k fk">FK</span>' : ''}${input(c)}</label>`).join('')}
+    <div><button class="btn">Insert</button></div></form>${sqlPanel()}</div>
+    <div class="card"><h2>${recTable} <span class="muted" style="font-weight:400">${rows.length} rows</span></h2>
+    ${grid(rows, { keys: { [t.pk]: '<span class="k pk">PK</span>' }, action: (r) => `<button class="btn ghost sm" data-del="${r[t.pk]}">Delete</button>` })}</div>`;
+  $$('.chips button', v).forEach((b) => (b.onclick = () => { recTable = b.dataset.t; lastSql = null; render(); }));
+  $('#ins').onsubmit = (e) => {
+    e.preventDefault();
+    act(() => api('/api/table/' + recTable, { method: 'POST', body: Object.fromEntries(new FormData(e.target)) }), (r) => `Inserted ${recTable} row ${r.id}.`);
+  };
+  $$('[data-del]', v).forEach((b) => (b.onclick = () => {
+    if (b.dataset.sure) return act(() => api(`/api/table/${recTable}/${b.dataset.del}`, { method: 'DELETE' }), `Deleted ${recTable} row ${b.dataset.del}.`);
+    b.dataset.sure = 1; b.textContent = 'Confirm?'; b.classList.add('red');
+  }));
+}
+
+// ---------------- database ----------------
+
+async function database(v) {
+  const o = await api('/api/db/overview');
+  const rowsTotal = o.tables.reduce((a, t) => a + t.rows, 0);
+  let body = '';
+  if (dbSub === 'tables') {
+    const { rows } = await api('/api/table/' + dbTable);
+    body = `<div class="tcards">${o.tables.map((t) => `<button class="${t.name === dbTable ? 'on' : ''}" data-tb="${t.name}"><b>${t.name}</b><small>${t.rows} rows</small></button>`).join('')}</div>
+      <div style="margin-top:14px"><h2 style="font-size:14px;margin:0 0 8px">${dbTable} <span class="muted" style="font-weight:400">${rows.length} rows</span></h2>${grid(rows)}</div>`;
+  } else if (dbSub === 'schema') {
+    const s = await api('/api/db/schema');
+    body = s.map((x) => `<h2 style="font-size:13px;margin:14px 0 6px">${x.kind}: <code>${esc(x.name)}</code></h2><pre>${esc(x.sql)}</pre>`).join('');
+  } else if (dbSub === 'queries') {
+    const q = await api('/api/db/queries');
+    body = q.map((x) => `<h2 style="font-size:13px;margin:18px 0 6px">${x.id === 'View' ? 'View' : x.id}: ${esc(x.title)}</h2><pre>${esc(x.sql)}</pre><div style="margin-top:8px">${grid(x.rows)}</div>`).join('');
+  } else {
+    const log = await api('/api/db/log');
+    body = log.length ? grid(log.slice().reverse().map((l) => ({ time: l.at.slice(11, 19), result: l.ok ? `OK, ${l.rows ?? 0} row(s)` : l.error, statement: l.sql })),
+      { fmt: { result: (x) => x.startsWith('OK') ? `<span style="color:var(--ok)">${esc(x)}</span>` : `<span class="err">${esc(x)}</span>`, statement: (x) => `<code>${esc(x)}</code>` } })
+      : '<div class="empty">No writes yet in this session.</div>';
+  }
+  v.innerHTML = `<div class="card"><h2>Database</h2><p class="sub">Everything on this tab is read live from MySQL.</p>
+    <div class="stats"><div><span>${o.tables.length}</span><small>tables</small></div><div><span>${rowsTotal}</span><small>rows</small></div>
+    <div><span>${o.foreignKeys}</span><small>foreign keys</small></div><div><span>${o.checks}</span><small>check constraints</small></div>
+    <div><span>${o.indexes}</span><small>indexes</small></div><div><span>${o.views}</span><small>views</small></div>
+    <div><span>${o.procedures}</span><small>procedures</small></div><div><span>${o.triggers}</span><small>triggers</small></div></div></div>
+    <div class="card"><div class="chips">${[['tables', 'Tables'], ['schema', 'Schema'], ['queries', 'Views and queries'], ['log', 'Activity log']]
+      .map(([k, l]) => `<button class="${k === dbSub ? 'on' : ''}" data-sub="${k}">${l}</button>`).join('')}</div>${body}</div>`;
+  $$('[data-sub]', v).forEach((b) => (b.onclick = () => { dbSub = b.dataset.sub; render(); }));
+  $$('[data-tb]', v).forEach((b) => (b.onclick = () => { dbTable = b.dataset.tb; render(); }));
+}
+
+// ---------------- start ----------------
 
 (async () => {
-  meta = await api('/api/meta');
-  $('#nav').innerHTML = [...Object.keys(meta.tables), 'reports']
-    .map((t) => `<button data-t="${t}">${label(t)}</button>`).join('');
-  document.querySelectorAll('nav button').forEach((b) => b.onclick = () => go(b.dataset.t));
-  go('student');
+  try {
+    const s = await api('/api/status');
+    $('#status').textContent = `MySQL ${s.version} · ${s.database}`; $('#status').className = 'pill ok';
+    people = await api('/api/people');
+  } catch (e) {
+    $('#status').textContent = 'MySQL not reachable'; $('#status').className = 'pill bad';
+    $('#view').innerHTML = `<div class="card err">${esc(e.message)}</div>`;
+    return;
+  }
+  $('#who').innerHTML =
+    `<optgroup label="Students">${people.students.map((s) => `<option value="student:${s.student_id}">${esc(s.full_name)} (${esc(s.roll_no)})</option>`).join('')}</optgroup>` +
+    `<optgroup label="Wardens">${people.staff.filter((s) => s.designation === 'Warden').map((s) => `<option value="warden:${s.staff_id}">${esc(s.full_name)} (Warden)</option>`).join('')}</optgroup>` +
+    `<optgroup label="Service staff">${people.staff.filter((s) => s.designation !== 'Warden').map((s) => `<option value="staff:${s.staff_id}">${esc(s.full_name)} (${esc(s.designation)})</option>`).join('')}</optgroup>`;
+  const pick = new URLSearchParams(location.search).get('as');
+  if (pick && [...$('#who').options].some((o) => o.value === pick)) $('#who').value = pick;
+  const start = () => { user = $('#who').value; tab = tabsFor()[0]; lastSql = null; drawTabs(); render(); };
+  $('#who').onchange = start;
+  start();
 })();
 </script>
 </body>
